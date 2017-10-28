@@ -11,8 +11,10 @@
   },
   "author": "rbeier",
   "license": "MIT",
+  "preferGlobal" : "true",
   "dependencies": {
     "commander": "^2.11.0",
-    "ip": "^1.1.5"
+    "ip": "^1.1.5",
+    "mime-types": "^2.1.17"
   }
 }
