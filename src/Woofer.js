@@ -3,7 +3,8 @@
 const http = require('http'),
       fs   = require('fs'),
       ip   = require('ip'),
-      FileHandler = require('./FileHandler');
+      FileHandler = require('./FileHandler'),
+      mime = require('mime-types');
 
 class Woofer {
 
@@ -21,11 +22,23 @@ class Woofer {
 
         if( parseInt(this.port) != this.port ) {
 
-            console.log("Port must be a Number!");
-
+            console.error("Port must be a Number!");
             process.exit();
 
         }
+
+        this.checkIfFileExists();
+
+    }
+
+    checkIfFileExists() {
+
+        fs.access(this.filepath, (err) => {
+            if (err) {
+                console.error('No such file');
+                process.exit();
+            }
+        });
 
     }
 
@@ -33,7 +46,9 @@ class Woofer {
 
         http.createServer((request, response) => {
 
-            this.serveFile(response);
+            this.setHeader(response);
+
+            this.pipeStreamToResponse(response);
 
             this.logDownloads(request);
 
@@ -43,21 +58,23 @@ class Woofer {
 
     }
 
-    serveFile(response) {
+    setHeader(response) {
 
-        fs.readFile(this.fileHandler.getFilepath(), (error, content) => {
+        fs.statSync(this.fileHandler.getFilepath(), (error, stat) => {
 
-            console.log(error);
-
-            if (error) {
-                response.writeHead(400, {'Content-type':'text/html'})
-                response.end("No such file or directory");
-            } else {
-                response.setHeader('Content-disposition', 'attachment; filename='+ this.fileHandler.getFileName());
-                response.end(content);
-            }
+            response.setHeader('Content-disposition', 'attachment; filename='+ this.fileHandler.getFileName());
+            response.setHeader('Content-Type', mime.lookup(this.filepath))
+            response.setHeader('Content-Length', stat.size)
 
         });
+
+    }
+
+    pipeStreamToResponse(response) {
+
+        let stream = fs.createReadStream(this.filepath);
+
+        stream.pipe(response);
 
     }
 

@@ -1,6 +1,6 @@
 {
   "name": "nwoof",
-  "version": "0.0.5",
+  "version": "0.0.4",
   "description": "a woof port for nodejs",
   "main": "index.js",
   "bin": {
@@ -9,10 +9,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "rbeier",
+  "author": "Robin Beier <contact@robinbeier.net>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rbeier/nwoof"
+  },
+  "preferGlobal": "true",
   "dependencies": {
     "commander": "^2.11.0",
-    "ip": "^1.1.5"
+    "ip": "^1.1.5",
+    "mime-types": "^2.1.17"
   }
 }
