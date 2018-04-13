@@ -2,38 +2,30 @@
 
 const http = require('http'),
       fs   = require('fs'),
-      path = require('path'),
-      ip   = require('ip');
+      ip   = require('ip'),
+      FileHandler = require('./FileHandler');
 
 class Woofer {
 
     constructor(file, port) {
 
-        this.file = file;
-        this.port = port;
+        this.port        = port;
+        this.fileHandler = new FileHandler(file);
 
-        this.checkIfPortIsInteger();
-
-        this.resolveFile();
-
+        this.checkPort();
         this.createServer();
 
     }
 
-    checkIfPortIsInteger() {
+    checkPort() {
 
         if( parseInt(this.port) != this.port ) {
+
             console.log("Port must be a Number!");
+
             process.exit();
+
         }
-
-    }
-
-    resolveFile() {
-
-        this.filepath = path.resolve(this.file);
-
-        this.filename = path.basename(this.filepath);
 
     }
 
@@ -47,13 +39,13 @@ class Woofer {
 
         }).listen(this.port);
 
-        this.showServerStatus();
+        this.printDownloadUrl();
 
     }
 
     serveFile(response) {
 
-        fs.readFile(this.filepath, (error, content) => {
+        fs.readFile(this.fileHandler.getFilepath(), (error, content) => {
 
             console.log(error);
 
@@ -61,7 +53,7 @@ class Woofer {
                 response.writeHead(400, {'Content-type':'text/html'})
                 response.end("No such file or directory");
             } else {
-                response.setHeader('Content-disposition', 'attachment; filename='+ this.filename);
+                response.setHeader('Content-disposition', 'attachment; filename='+ this.fileHandler.getFileName());
                 response.end(content);
             }
 
@@ -77,48 +69,15 @@ class Woofer {
 
             console.log( 'Serving request from: ' + ip );
 
-        } catch(e) {
-
-            console.log('unknown IP address');
-
-        }
+        } catch(e) { }
 
     }
 
-    showServerStatus() {
+    printDownloadUrl() {
 
         let downloadUrl = 'http://' + ip.address() + ':' + this.port + '/';
 
         console.log("\nServer running at " + downloadUrl + "\n");
-
-    }
-
-    static showDescription() {
-
-        if( this.descriptionWanted() ) {
-
-            console.log('                                 __');
-            console.log('                                / _|');
-            console.log('       _ ____      _____   ___ | |_');
-            console.log('      | \'_ \\ \\ /\\ / / _ \\ / _ \\|  _|');
-            console.log('      | | | \\ V  V / (_) | (_) | |');
-            console.log('      |_| |_|\\_/\\_/ \\___/ \\___/|_|');
-
-            console.log('\n----------------------------------------------\n')
-
-            console.log('  nwoof creates a small and simple webserver');
-            console.log('  that can be used to share files or folders');
-            console.log('  easily with people on the same network.');
-
-        }
-
-    }
-
-    static descriptionWanted() {
-
-        let params = process.argv.slice(2);
-
-        return params.length == 0 || params.includes('--help', '-h') || params.includes('-h');
 
     }
 
