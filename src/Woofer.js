@@ -32,7 +32,7 @@ class Woofer {
 
             this.setHeader(response);
 
-            this.fileHandler.createFileStream.pipe(response)
+            this.fileHandler.createFileStream().pipe(response)
 
             this.logRequests(request);
 
