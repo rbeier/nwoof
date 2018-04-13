@@ -3,8 +3,7 @@
 const http = require('http'),
       fs   = require('fs'),
       ip   = require('ip'),
-      FileHandler = require('./FileHandler'),
-      mime = require('mime-types');
+      FileHandler = require('./FileHandler');
 
 class Woofer {
 
@@ -16,30 +15,15 @@ class Woofer {
         this.checkPort();
         this.createServer();
 
+        this.printDownloadUrl();
+
     }
 
     checkPort() {
-
         if( parseInt(this.port) != this.port ) {
-
             console.error("Port must be a Number!");
             process.exit();
-
         }
-
-        this.checkIfFileExists();
-
-    }
-
-    checkIfFileExists() {
-
-        fs.access(this.filepath, (err) => {
-            if (err) {
-                console.error('No such file');
-                process.exit();
-            }
-        });
-
     }
 
     createServer() {
@@ -48,37 +32,21 @@ class Woofer {
 
             this.setHeader(response);
 
-            this.pipeStreamToResponse(response);
+            this.fileHandler.createFileStream.pipe(response)
 
-            this.logDownloads(request);
+            this.logRequests(request);
 
         }).listen(this.port);
-
-        this.printDownloadUrl();
 
     }
 
     setHeader(response) {
-
-        fs.statSync(this.fileHandler.getFilepath(), (error, stat) => {
-
-            response.setHeader('Content-disposition', 'attachment; filename='+ this.fileHandler.getFileName());
-            response.setHeader('Content-Type', mime.lookup(this.filepath))
-            response.setHeader('Content-Length', stat.size)
-
-        });
-
+        response.setHeader('content-disposition', 'attachment; filename='+ this.fileHandler.getFileName());
+        response.setHeader('content-Type', 'application/octet-stream');
+        response.setHeader('content-Length', this.fileHandler.getFilesize());
     }
 
-    pipeStreamToResponse(response) {
-
-        let stream = fs.createReadStream(this.filepath);
-
-        stream.pipe(response);
-
-    }
-
-    logDownloads(request) {
+    logRequests(request) {
 
         try {
 
