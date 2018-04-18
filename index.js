@@ -3,10 +3,11 @@
 
 const program     = require('commander'),
       Woofer      = require('./src/Woofer'),
-      HelpMessage = require('./src/HelpMessage');
+      HelpMessage = require('./src/HelpMessage'),
+      version     = require('./package.json').version;
 
 program
-    .version('0.0.5')
+    .version(version)
     .usage('nwoof <file>')
     .description(new HelpMessage)
     .option('-p, --port <port>', 'choose a custom port', 1337)
