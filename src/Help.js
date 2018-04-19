@@ -1,19 +1,19 @@
 'use strict';
 
-class HelpMessage {
+class Help {
 
-    constructor() {
+    static message() {
 
         let params = process.argv.slice(2);
 
         if( params.length == 0 || params.includes('--help') || params.includes('-h') ) {
-            this.outputLogo();
-            this.outputDescription();
+            Help.outputLogo();
+            Help.outputDescription();
         }
 
     }
 
-    outputLogo() {
+    static outputLogo() {
         console.log('                                 __');
         console.log('                                / _|');
         console.log('       _ ____      _____   ___ | |_');
@@ -23,7 +23,7 @@ class HelpMessage {
         console.log('\n----------------------------------------------\n');
     }
 
-    outputDescription() {
+    static outputDescription() {
         console.log('  nwoof creates a small and simple webserver');
         console.log('  that can be used to share files or folders');
         console.log('  easily with people on the same network.');
@@ -31,4 +31,4 @@ class HelpMessage {
 
 }
 
-module.exports = HelpMessage;
+module.exports = Help;

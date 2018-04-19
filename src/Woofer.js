@@ -1,20 +1,18 @@
 'use strict';
 
-const http = require('http'),
-      fs   = require('fs'),
-      ip   = require('ip'),
-      FileHandler = require('./FileHandler');
+const File = require('./File'),
+      http = require('http'),
+      ip   = require('ip');
 
 class Woofer {
 
     constructor(file, port) {
 
-        this.port        = port;
-        this.fileHandler = new FileHandler(file);
+        this.port = port;
+        this.file = new File(file);
 
         this.checkPort();
         this.createServer();
-
         this.printDownloadUrl();
 
     }
@@ -28,11 +26,11 @@ class Woofer {
 
     createServer() {
 
-        http.createServer((request, response) => {
+        http.createServer(async (request, response) => {
 
             this.setHeader(response);
 
-            this.fileHandler.createFileStream().pipe(response)
+            await this.file.createFileStream().pipe(response);
 
             this.logRequests(request);
 
@@ -41,18 +39,18 @@ class Woofer {
     }
 
     setHeader(response) {
-        response.setHeader('content-disposition', 'attachment; filename='+ this.fileHandler.getFileName());
+        response.setHeader('content-disposition', 'attachment; filename='+ this.file.getFileName());
         response.setHeader('content-Type', 'application/octet-stream');
-        response.setHeader('content-Length', this.fileHandler.getFilesize());
+        response.setHeader('content-Length', this.file.getFilesize());
     }
 
     logRequests(request) {
 
         try {
 
-            let ip = request.connection.remoteAddress.split(':').slice(-1).toString();
+            let address = request.connection.remoteAddress.split(':').slice(-1).toString();
 
-            console.log( 'Serving request from: ' + ip );
+            console.log( 'Serving request from: ' + address );
 
         } catch(e) { }
 
