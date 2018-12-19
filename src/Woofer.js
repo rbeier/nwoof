@@ -19,8 +19,12 @@ class Woofer {
 
     checkPort() {
         if( parseInt(this.port) != this.port ) {
-            console.error("Port must be a Number!");
+            console.error("\x1b[31mPort must be a Number!");
             process.exit();
+        }
+
+        if( this.port < 1024 ) {
+            console.info("\x1b[33m\nYou should not use a well-known port. This may cause errors!")
         }
     }
 
@@ -58,9 +62,9 @@ class Woofer {
 
     printDownloadUrl() {
 
-        let downloadUrl = 'http://' + ip.address() + ':' + this.port + '/';
+        let downloadUrl = `http://${ip.address()}:${this.port}/${this.file.filename}`;
 
-        console.log("\nServer running at " + downloadUrl + "\n");
+        console.log("\x1b[0m\nNow serving on " + downloadUrl + "\n");
 
     }
 
