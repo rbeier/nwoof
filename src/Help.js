@@ -26,7 +26,7 @@ class Help {
     static outputDescription() {
         console.log('  nwoof creates a small and simple webserver');
         console.log('  that can be used to share files or folders');
-        console.log('  easily with people on the same network.');
+        console.log('  easily with people on the same network.\n');
     }
 
 }
